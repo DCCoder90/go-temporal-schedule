@@ -38,12 +38,13 @@ func main() {
 
 	// Create the schedule with the calculated phase offset
 	_, err = c.ScheduleClient().Create(context.Background(), client.ScheduleOptions{
-		ID: scheduleID,
+		ID:                 scheduleID,
+		TriggerImmediately: true, // Run once on creation
 		Spec: client.ScheduleSpec{
 			Intervals: []client.ScheduleIntervalSpec{
 				{
 					Every:  interval,
-					Offset: phase, // This is where we are setting the offset so the schedule starts immediately
+					Offset: phase, // Subsequent runs align to creation time
 				},
 			},
 		},
