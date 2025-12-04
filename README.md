@@ -8,11 +8,26 @@ Temporal interval schedules align to the Unix epoch. A 10-minute schedule create
 
 ## Solution
 
-Use the `Offset` field in `ScheduleIntervalSpec`:
+Use `TriggerImmediately` and `Offset`:
 
 ```go
 phase := time.Now().UTC().Sub(time.Now().UTC().Truncate(interval))
+
+c.ScheduleClient().Create(ctx, client.ScheduleOptions{
+    ID:                 scheduleID,
+    TriggerImmediately: true,   // Execute immediately on creation
+    Spec: client.ScheduleSpec{
+        Intervals: []client.ScheduleIntervalSpec{{
+            Every:  interval,
+            Offset: phase,      // Align subsequent runs to creation time
+        }},
+    },
+    ...
+})
 ```
+
+- **`TriggerImmediately`**: Runs the workflow once when the schedule is created
+- **`Offset`**: Shifts all subsequent runs to align with your creation time
 
 See: [scheduler/main.go](./scheduler/main.go)
 
